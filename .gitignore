@@ -1,0 +1,10 @@
+credentials.json
+*.data
+*.txt
+*.json
+*.pkl
+*.dict
+*.mm
+*.pyc
+*.csv
+data/*
