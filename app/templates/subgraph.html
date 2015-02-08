@@ -6,13 +6,13 @@
    <meta name="viewport" content="width=device-width, initial-scale=1">
    <meta name="description" content="">
    <meta name="author" content="">
-   <link rel="icon" href="../../favicon.ico">
-   <link rel="stylesheet" href="../static/css/haventreddityet.css">
+   <!--link rel="icon" href="../../favicon.ico"-->
+   <link rel="stylesheet" href="/static/css/haventreddityet.css">
    
    <title>haventreddityet</title>
 
    <!-- Bootstrap core CSS -->
-   <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+   <link href="/static/css/bootstrap.min.css" rel="stylesheet">
    
    <title>haventreddityet.com</title>
    <script>
@@ -44,14 +44,14 @@
     }
 
 
-      function D3notok() {
-	document.getElementById('sidepanelright').style.visibility = 'hidden';
-	var nocontent = document.getElementById('nocontent');
-	nocontent.style.visibility = 'visible';
-	nocontent.style.pointerEvents = 'all';
-	var t = document.getElementsByTagName('body');
-	var body = document.getElementsByTagName('body')[0];
-      }	
+  function D3notok() {
+	 document.getElementById('sidepanelright').style.visibility = 'hidden';
+	 var nocontent = document.getElementById('nocontent');
+	 nocontent.style.visibility = 'visible';
+	 nocontent.style.pointerEvents = 'all';
+	 var t = document.getElementsByTagName('body');
+	 var body = document.getElementsByTagName('body')[0];
+  }	
 
 // -------------------------------------------------------------------
 // A number of forward declarations. These variables need to be defined since 
@@ -120,7 +120,7 @@ var svg = d3.select("#movieNetwork").append("svg:svg")
 .attr("width", WIDTH+"%")
 .attr("height", HEIGHT)
 .attr("id","graph")
-.attr("viewBox", "0% 0% " + WIDTH + "% " + HEIGHT )
+.attr("viewBox", "0 0 " + WIDTH + HEIGHT )
 .attr("preserveAspectRatio", "xMidYMid meet");
 
 // Movie panel: the div into which the movie details info will be written
@@ -185,11 +185,11 @@ Parameters: the node data, and the array containing all nodes
 */
 function getMovieInfo( n, nodeArray ) {
 info = '<div id="cover">';
-if( n.label )
-info += '<div class=t style="float: left"><a href="' + n.weblink + '">'+n.label+'</a></div>';
+//if( n.label )
+//info += '<div class=t style="float: left"><a href="' + n.weblink + '">'+n.label+'</a></div>';
 
-info += '<br/></div><div style="clear: both;">'
-info += '<br><div ><span class=d>Category</span> <br>';
+//info += '<br/></div><div style="clear: both;">'
+info += '<div ><span class=d>Category</span> <br>';
 
 if(n.cat_names) {
   
@@ -212,6 +212,92 @@ info += '</div>';
 }
 info += '<br>';
 
+
+return info;
+}
+
+// *************************************************************************
+
+
+movieInfoDiv2 = d3.select("#movieInfo2");
+//CategoryInfoDiv = d3.select("#catInfo");
+/* ....................................................................... */
+
+// Get the current size & offset of the browser's viewport window
+function getViewportSize( w ) {
+var w = w || window;
+if( w.innerWidth != null ) 
+return { w: w.innerWidth, 
+   h: w.innerHeight,
+   x : w.pageXOffset,
+   y : w.pageYOffset };
+var d = w.document;
+if( document.compatMode == "CSS1Compat" )
+return { w: d.documentElement.clientWidth,
+   h: d.documentElement.clientHeight,
+   x: d.documentElement.scrollLeft,
+   y: d.documentElement.scrollTop };
+else
+return { w: d.body.clientWidth, 
+   h: d.body.clientHeight,
+   x: d.body.scrollLeft,
+   y: d.body.scrollTop};
+}
+
+
+
+function getQStringParameterByName(name) {
+var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+
+
+/* Change status of a panel from visible to hidden or viceversa
+id: identifier of the div to change
+status: 'on' or 'off'. If not specified, the panel will toggle status
+*/
+toggleDiv = function( id, status ) {
+d = d3.select('div#'+id);
+if( status === undefined )
+status = d.attr('class') == 'panel_on' ? 'off' : 'on';
+d.attr( 'class', 'panel_' + status );
+return false;
+}
+
+
+/* Clear all help boxes and select a movie in the network and in the 
+movie details panel
+*/
+//clearAndSelect = function (id) {
+//toggleDiv('faq','off'); 
+//toggleDiv('help','off'); 
+//selectMovie(id,true); // we use here the selectMovie() closure
+//}
+
+
+/* Compose the content for the panel with movie details.
+Parameters: the node data, and the array containing all nodes
+*/
+function getMovieInfo2( n, nodeArray ) {
+
+info = '<div id="cover">';
+if( n.label )
+info += '<div class=t style="float: right"><a href="' + n.weblink + '">'+n.label+'</a></div><br>';
+if(n.subtitle)
+info += '<br><div ><span class=d style="float: right">'+n.subtitle+'</span> <br>';
+
+info += '<br/></div><div style="clear: both;">'
+
+if(n.nsubscribers)
+info += '<br><div ><span class=c> Subscribers: '+n.nsubscribers +'</span> <br>';
+
+if(n.age)
+info += '<br><div ><span class=c> Age: '+n.age +'</span> <br>';
+
+if(n.description){
+info += '<br><div ><span class=d>Description:</span> <br>';
+info += '<br><div ><span class=l> '+n.description +'</span> <br>';
+}
 
 return info;
 }
@@ -279,7 +365,7 @@ var graphNodes = networkGraph.append('svg:g').attr('class','grp gNodes')
 .attr('pointer-events', 'all')
 //.on("click", function(d) { highlightGraphNode(d,true,this); } )    
 .on("click", function(d) { showMoviePanel(d); } )
-//.on("click", function(d) { showCategoryDist(d); } )
+.on("click", function(d) { showMoviePanel2(d); } )
 .on("mouseover", function(d) { highlightGraphNode(d,true,this);  } )
 .on("mouseout",  function(d) { highlightGraphNode(d,false,this); } );
 
@@ -375,6 +461,7 @@ label
       // Now highlight the graph node and show its movie panel
       highlightGraphNode( nodeArray[new_idx], true );
       showMoviePanel( nodeArray[new_idx] );
+      showMoviePanel2( nodeArray[new_idx] );
     }
 
 
@@ -384,6 +471,16 @@ label
     function showMoviePanel( node ) {
       // Fill it and display the panel
       movieInfoDiv
+  .html( getMovieInfo(node,nodeArray) )
+  .attr("class","panel_on");
+    }
+
+    function showMoviePanel2( node ) {
+      // Fill it and display the panel
+      movieInfoDiv2
+  .html( getMovieInfo2(node,nodeArray) )
+  .attr("class","panel_on");
+  movieInfoDiv
   .html( getMovieInfo(node,nodeArray) )
   .attr("class","panel_on");
     }
@@ -536,7 +633,7 @@ label
             <a>
           <form  action="/output" method="GET">
             <div class="form-group">
-                <input type="text" id="ID" name='ID' placeholder="Search e.g. r/corgi">
+                <input type="text" id="ID" name='ID' placeholder="{{current_node}}">
              </div>
             </form>
           </a>
@@ -548,7 +645,7 @@ label
 
 <div class="container">
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-    <script src="static/js/bootstrap.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
     
 </div> <!-- /.container-->
 
@@ -556,17 +653,21 @@ label
 
 <div id="movieNetwork"></div>
 
-<div id="sidepanelright">
+<div id="sidepanelleft">
     
     <div id="movieInfo" class="panel_off"></div>
 </div>
-   
+
+<div id="sidepaneright">
+    
+    <div id="movieInfo2" class="panel_off"></div>
+</div>
 
 
    <!-- Bootstrap core JavaScript
    ================================================== -->
    <!-- Placed at the end of the document so the pages load faster -->
    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-   <script src="static/js/bootstrap.min.js"></script>
+   <script src="/static/js/bootstrap.min.js"></script>
  </body>
 </html>
